@@ -30,15 +30,15 @@ public class PatientController {
 
     // create a patient
     @ResponseStatus(HttpStatus.CREATED) // 201
-    @PostMapping
+    @PostMapping("/add")
     public Patient create(@RequestBody Patient patient) {
         return patientService.save(patient);
     }
 
     // update a patient
-    @PutMapping
-    public Patient update(@RequestBody Patient patient) {
-        return patientService.save(patient);
+    @PutMapping("/update")
+    public boolean update(@RequestBody Patient patient) {
+        return patientService.update(patient);
     }
 
     // delete a patient
@@ -53,10 +53,10 @@ public class PatientController {
         return patientService.findByFamily(family);
     }
 
-    @GetMapping("/find/dob-after/{date}")
-    public List<Patient> findByDobAfter(
-            @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
-        return patientService.findByDobAfter(date);
-    }
+//    @GetMapping("/find/dob-after/{date}")       // TRY IF MORE TIME
+//    public List<Patient> findByDobAfter(
+//            @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+//        return patientService.findByDobAfter(date);
+//    }
 
 }

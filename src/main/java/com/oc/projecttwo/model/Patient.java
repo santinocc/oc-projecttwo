@@ -10,12 +10,12 @@ public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String family;
-    private String given;
-    private String dob;
-    private String sex;
-    private String address;
-    private String phone;
+    public String family;
+    public String given;
+    public String dob;
+    public String sex;
+    public String address;
+    public String phone;
 
     // for JPA only, no use
     public Patient() {

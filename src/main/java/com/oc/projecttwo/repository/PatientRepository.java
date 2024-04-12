@@ -14,7 +14,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     List<Patient> findByFamily(String family);
 
     // Custom query
-    @Query("SELECT b FROM Patient b WHERE b.dob > :date")        //PENDING: Dob model class needs to be 'LocalDate' instead of 'String'
-    List<Patient> findByDobAfter(@Param("date") LocalDate date);
+//    @Query("SELECT b FROM Patient b WHERE b.dob > :date")        //PENDING: Dob model class needs to be 'LocalDate' instead of 'String'
+//    List<Patient> findByDobAfter(@Param("date") LocalDate date);
 
 }
