@@ -140,7 +140,7 @@ public class PatientControllerTest {
                     .statusCode(201) // expecting HTTP 201 Created
                     .contentType(ContentType.JSON); // expecting JSON response content
 
-        // find the new saved book
+        // find the new saved patient
         given()
                 //Returning floats and doubles as BigDecimal
                 .config(RestAssured.config().jsonConfig(jsonConfig().numberReturnType(BIG_DECIMAL)))
@@ -189,7 +189,7 @@ public class PatientControllerTest {
                     .statusCode(200)
                     .contentType(ContentType.JSON);
 
-        // get the updated book
+        // get the updated patient
         Patient updatedPatient = patientRepository.findById(id).orElseThrow();
         System.out.println(updatedPatient);
 
