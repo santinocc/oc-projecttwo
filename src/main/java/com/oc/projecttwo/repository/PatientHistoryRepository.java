@@ -1,10 +1,13 @@
 package com.oc.projecttwo.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.oc.projecttwo.model.PatientHistory;
 
 // Spring Data JPA creates CRUD implementation at runtime automatically.
-public interface PatientHistoryRepository extends JpaRepository<PatientHistory, Long> {
+public interface PatientHistoryRepository extends MongoRepository<PatientHistory, Long> {
 
+	List<PatientHistory> findNoteByPatId(Long patId);
 }

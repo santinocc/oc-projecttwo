@@ -1,16 +1,27 @@
 package com.oc.projecttwo.model;
 
-import jakarta.persistence.Entity;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Id;
+//import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+//import jakarta.persistence.Id;
 
-@Entity
+//@Entity
+@Document("PatientHistory")
 public class PatientHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long patId;
     public String note;
+    
+    
+    public PatientHistory(Long patId, String note) {
+		super();
+		this.patId = patId;
+		this.note = note;
+	}
+    
 
     // for JPA only, no use
     public PatientHistory() {
@@ -42,5 +53,13 @@ public class PatientHistory {
 
     public void setNote(String note) {
         this.note = note;
+    }
+    
+    public static PatientHistory update(final Long patId, final PatientHistory patientHistory) {
+        final PatientHistory patientHistoryUpdated =  new PatientHistory();
+        patientHistoryUpdated.setPatId(patId);
+        patientHistoryUpdated.setNote(patientHistory.getNote() == null ? null : patientHistory.getNote());
+
+        return patientHistoryUpdated;
     }
 }
