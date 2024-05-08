@@ -62,11 +62,4 @@ public class PatientHistory {
         notes.add(note);
     }
     
-    public static PatientHistory update(final Long patId, final PatientHistory patientHistory) {
-        final PatientHistory patientHistoryUpdated =  new PatientHistory();
-        patientHistoryUpdated.setPatId(patId);
-        patientHistoryUpdated.setNotes(patientHistory.getNotes() == null ? null : patientHistory.getNotes());
-
-        return patientHistoryUpdated;
-    }
 }

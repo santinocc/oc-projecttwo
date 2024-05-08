@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -70,20 +69,20 @@ public class PatientHistoryController {
     }
 
     // update a patientHistory -- NOT NEEDED ANYMORE, DELETE
-    @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody PatientHistory patientHistory) {
-    	
-        final var response = patientHistoryRepository.findById(patientHistory.getPatId());
-        if(response.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-    	//        return patientHistoryService.update(patientHistory);
-    	
-    	final var responseUpdated = PatientHistory.update(patientHistory.getPatId(), patientHistory);
-    	
-    	return ResponseEntity.ok(responseUpdated);
-    }
+//    @PutMapping("/update")
+//    public ResponseEntity<?> update(@RequestBody PatientHistory patientHistory) {
+//    	
+//        final var response = patientHistoryRepository.findById(patientHistory.getPatId());
+//        if(response.isEmpty()) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//    	//        return patientHistoryService.update(patientHistory);
+//    	
+//    	final var responseUpdated = PatientHistory.update(patientHistory.getPatId(), patientHistory);
+//    	
+//    	return ResponseEntity.ok(responseUpdated);
+//    }
 
     // delete a patientHistory
     @ResponseStatus(HttpStatus.NO_CONTENT) // 204
