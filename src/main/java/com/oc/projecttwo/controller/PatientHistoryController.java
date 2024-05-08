@@ -1,6 +1,8 @@
 package com.oc.projecttwo.controller;
 
+//import com.oc.projecttwo.model.PatientHistories;
 import com.oc.projecttwo.model.PatientHistory;
+import com.oc.projecttwo.model.PatientNote;
 import com.oc.projecttwo.repository.PatientHistoryRepository;
 import com.oc.projecttwo.service.PatientHistoryService;
 
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,15 +40,36 @@ public class PatientHistoryController {
     public Optional<PatientHistory> findByPatId(@PathVariable Long patId) {
         return patientHistoryService.findByPatId(patId);
     }
+    
+//    @GetMapping("/{patId}/histories")
+//    public PatientHistories givePatientHistoriesByPatId(@PathVariable Long patId) {
+//        return patientHistoryService.givePatientHistoriesByPatId(patId);
+//    }
 
     // create a patientHistory
     @ResponseStatus(HttpStatus.CREATED) // 201
     @PostMapping("/add")
-    public PatientHistory create(@RequestBody PatientHistory patientHistory) {
-        return patientHistoryService.save(patientHistory);
+    public PatientHistory create(@RequestBody PatientNote patientNote) {
+//    	var existingNotes = patientHistoryService.findByPatId(patientNote.getPatId()).get();
+//    	
+//    	existingNotes.addNote(patientNote.getNote());
+//    	
+////    	patientHistoryService.findByPatId(patientNote.getPatId());
+    	Optional<PatientHistory> existingNotes = patientHistoryService.findByPatId(patientNote.getPatId());
+
+    	if (existingNotes.isPresent()) {
+    	    PatientHistory patientHistory = existingNotes.get();
+    	    List<String> notes = patientHistory.getNotes();
+    	    if (notes == null) {
+    	        patientHistory.setNotes(new ArrayList<String>());
+    	    } 
+    	    patientHistory.addNote(patientNote.getNote());
+    	    return patientHistoryService.save(patientHistory);
+    	}
+    	return null; //CREATE A NEW PATIENT
     }
 
-    // update a patientHistory
+    // update a patientHistory -- NOT NEEDED ANYMORE, DELETE
     @PutMapping("/update")
     public ResponseEntity<?> update(@RequestBody PatientHistory patientHistory) {
     	
@@ -58,7 +82,7 @@ public class PatientHistoryController {
     	
     	final var responseUpdated = PatientHistory.update(patientHistory.getPatId(), patientHistory);
     	
-    	return ResponseEntity.ok(patientHistoryRepository.save(responseUpdated));
+    	return ResponseEntity.ok(responseUpdated);
     }
 
     // delete a patientHistory
