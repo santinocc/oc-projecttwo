@@ -1,6 +1,9 @@
 package com.oc.projecttwo.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 //import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,13 +16,13 @@ public class PatientHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long patId;
-    public String note;
+    public  List<String> notes;
     
     
-    public PatientHistory(Long patId, String note) {
+    public PatientHistory(Long patId, List<String> notes) {
 		super();
 		this.patId = patId;
-		this.note = note;
+		this.notes = notes;
 	}
     
 
@@ -27,15 +30,15 @@ public class PatientHistory {
     public PatientHistory() {
     }
 
-    public PatientHistory(String note) {
-        this.note = note;
+    public PatientHistory(List<String> notes) {
+        this.notes = notes;
     }
 
     @Override
     public String toString() {
         return "Patient{" +
                 "patId=" + patId +
-                ", note='" + note + 
+                ", notes='" + notes + 
                 '}';
     }
 
@@ -47,18 +50,22 @@ public class PatientHistory {
         this.patId = patId;
     }
 
-    public String getNote() {
-        return note;
+    public List<String> getNotes() {
+        return notes;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setNotes(List<String> notes) {
+        this.notes = notes;
+    }
+    
+    public void addNote(String note) {
+        notes.add(note);
     }
     
     public static PatientHistory update(final Long patId, final PatientHistory patientHistory) {
         final PatientHistory patientHistoryUpdated =  new PatientHistory();
         patientHistoryUpdated.setPatId(patId);
-        patientHistoryUpdated.setNote(patientHistory.getNote() == null ? null : patientHistory.getNote());
+        patientHistoryUpdated.setNotes(patientHistory.getNotes() == null ? null : patientHistory.getNotes());
 
         return patientHistoryUpdated;
     }
