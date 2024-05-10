@@ -39,52 +39,14 @@ public class PatientHistoryController {
     public Optional<PatientHistory> findByPatId(@PathVariable Long patId) {
         return patientHistoryService.findByPatId(patId);
     }
-    
-//    @GetMapping("/{patId}/histories")
-//    public PatientHistories givePatientHistoriesByPatId(@PathVariable Long patId) {
-//        return patientHistoryService.givePatientHistoriesByPatId(patId);
-//    }
 
     // create a patientHistory
     @ResponseStatus(HttpStatus.CREATED) // 201
     @PostMapping("/add")
     public PatientHistory create(@RequestBody PatientNote patientNote) {
-//    	var existingNotes = patientHistoryService.findByPatId(patientNote.getPatId()).get();
-//    	
-//    	existingNotes.addNote(patientNote.getNote());
-//    	
-////    	patientHistoryService.findByPatId(patientNote.getPatId());
-    	Optional<PatientHistory> existingNotes = patientHistoryService.findByPatId(patientNote.getPatId());
-
-    	if (existingNotes.isPresent()) {
-    	    PatientHistory patientHistory = existingNotes.get();
-    	    List<String> notes = patientHistory.getNotes();
-    	    if (notes == null) {
-    	        patientHistory.setNotes(new ArrayList<String>());
-    	    } 
-    	    patientHistory.addNote(patientNote.getNote());
-    	    return patientHistoryService.save(patientHistory);
-    	}
-    	return null; //CREATE A NEW PATIENT
+    	return patientHistoryService.addPatientNote(patientNote);
     }
 
-    // update a patientHistory -- NOT NEEDED ANYMORE, DELETE
-//    @PutMapping("/update")
-//    public ResponseEntity<?> update(@RequestBody PatientHistory patientHistory) {
-//    	
-//        final var response = patientHistoryRepository.findById(patientHistory.getPatId());
-//        if(response.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//    	//        return patientHistoryService.update(patientHistory);
-//    	
-//    	final var responseUpdated = PatientHistory.update(patientHistory.getPatId(), patientHistory);
-//    	
-//    	return ResponseEntity.ok(responseUpdated);
-//    }
-
-    // delete a patientHistory
     @ResponseStatus(HttpStatus.NO_CONTENT) // 204
     @DeleteMapping("/{patId}")
     public void deleteByPatId(@PathVariable Long patId) {
