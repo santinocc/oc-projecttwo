@@ -1,10 +1,9 @@
 package com.oc.projecttwo;
 
-import com.oc.projecttwo.model.Patient;
-import com.oc.projecttwo.repository.PatientRepository;
+import com.oc.projecttwo.model.PatientHistory;
+import com.oc.projecttwo.repository.PatientHistoryRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +11,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.TestPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.config.JsonConfig.jsonConfig;
 import static io.restassured.path.json.config.JsonPathConfig.NumberReturnType.BIG_DECIMAL;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 // activate automatic startup and stop of containers
@@ -35,46 +34,37 @@ public class PatientHistoryControllerTest {
     private Integer port;
 
     @Autowired
-    PatientRepository patientRepository;
+    PatientHistoryRepository patientHistoryRepository;
 
-    // static, all tests share this postgres container
+    // static, all tests share this mongodb container
     @Container
     @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            "postgres:15-alpine"
+    static MongoDBContainer mongodb = new MongoDBContainer(
+            "mongodb"
     );
 
     @BeforeEach
     void setUp() {
         RestAssured.baseURI = "http://localhost:" + port;
-        patientRepository.deleteAll();
+        patientHistoryRepository.deleteAll();
 
-        Patient p1 = new Patient("PatientFamily A",
-        		"PatientGiven A",
-        		"1990-01-01",
-        		"M",
-        		"1 Brooklyn St",
-        		"111-222-3333");
-        Patient p2 = new Patient("PatientFamily B",
-        		"PatientGiven B",
-        		"1991-01-01",
-        		"F",
-        		"2 Brooklyn St",
-        		"444-555-6666");
-        Patient p3 = new Patient("PatientFamily C",
-        		"PatientGiven C",
-        		"2000-01-01",
-        		"M",
-        		"3 Chicago St",
-        		"777-888-9999");
-        Patient p4 = new Patient("PatientFamily D",
-        		"PatientGiven D",
-        		"2005-01-01",
-        		"F",
-        		"4 Chicago St",
-        		"111-888-9999");
+        List<String> a1 = new ArrayList<String>();
+        a1.add("Note Test 1");
+        PatientHistory p1 = new PatientHistory(1L,a1);
+        List<String> a2 = new ArrayList<String>();
+        a2.add("Note Test 1");
+        a2.add("Note Test 2");
+        PatientHistory p2 = new PatientHistory(2L,a2);
+        List<String> a3 = new ArrayList<String>();
+        a3.add("Note Test 1");
+        PatientHistory p3 = new PatientHistory(3L, a3);
+        List<String> a4 = new ArrayList<String>();
+        a4.add("Note Test 1");
+        a4.add("Note Test 2");
+        a4.add("Note Test 3");
+        PatientHistory p4 = new PatientHistory(4L,a4);
 
-        patientRepository.saveAll(List.of(p1, p2, p3, p4));
+        patientHistoryRepository.saveAll(List.of(p1, p2, p3, p4));
     }
 
     @Test
@@ -83,7 +73,7 @@ public class PatientHistoryControllerTest {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                    .get("/patients")
+                    .get("/patHistory")
                 .then()
                     .statusCode(200)    // expecting HTTP 200 OK
                     .contentType(ContentType.JSON) // expecting JSON response content
@@ -92,38 +82,34 @@ public class PatientHistoryControllerTest {
     }
 
     @Test
-    void testFindByFamily() {
+    void testFindByPatId() {
 
-        String family = "PatientFamily C";
+        Long patId = 1L;
 
         given()
                 //Returning floats and doubles as BigDecimal
                 .config(RestAssured.config().jsonConfig(jsonConfig().numberReturnType(BIG_DECIMAL)))
                 .contentType(ContentType.JSON)
-                .pathParam("family", family)
+                .pathParam("patId", patId)
                 .when()
-                    .get("/patients/find/family/{family}")
+                    .get("{patId}")
                 .then()
                     .statusCode(200)
                     .contentType(ContentType.JSON)
                     .body(
                         ".", hasSize(1),
-                        "[0].family", equalTo("PatientFamily C"),
-                        "[0].given", equalTo("PatientGiven C"),
-                        "[0].dob", equalTo("2000-01-01"),
-                        "[0].sex", equalTo("M"),
-                        "[0].address", equalTo("3 Chicago St"),
-                        "[0].phone", equalTo("777-888-9999")
+                        "[0].patId", equalTo("1L"),
+                        "[0].notes", equalTo("Note Test 1")
                 );
     }
 
     @Test
     public void testDeleteById() {
-        Long id = 1L; // replace with a valid ID
+        Long patId = 1L; // replace with a valid ID
         given()
-                .pathParam("id", id)
+                .pathParam("patId", patId)
                 .when()
-                    .delete("/patients/{id}")
+                    .delete("/patHistory/{patId}")
                 .then()
                     .statusCode(204); // expecting HTTP 204 No Content
     }
@@ -133,9 +119,9 @@ public class PatientHistoryControllerTest {
 
         given()
                 .contentType(ContentType.JSON)
-                .body("{ \"family\": \"PatientFamily E\", \"given\": \"PatientGiven E\", \"dob\": \"2023-09-14\", \"sex\": \"M\", \"address\": \"5 NY St\", \"phone\": \"000-111-0000\" }")
+                .body("{ \"patId\": \1L, \"notes\": \"Notes 1\" }")
                 .when()
-                    .post("/patients/add")
+                    .post("/patHistory/add")
                 .then()
                     .statusCode(201) // expecting HTTP 201 Created
                     .contentType(ContentType.JSON); // expecting JSON response content
@@ -145,61 +131,17 @@ public class PatientHistoryControllerTest {
                 //Returning floats and doubles as BigDecimal
                 .config(RestAssured.config().jsonConfig(jsonConfig().numberReturnType(BIG_DECIMAL)))
                 .contentType(ContentType.JSON)
-                .pathParam("family", "PatientFamily E")
+                .pathParam("patId", "Notes 1")
                 .when()
-                    .get("/patients/find/family/{family}")
+                    .get("/patHistory/{patId}")
                 .then()
                     .statusCode(200)
                     .contentType(ContentType.JSON)
                     .body(
                         ".", hasSize(1),
-                        "[0].family", equalTo("PatientFamily E"),
-                        "[0].given", equalTo("PatientGiven E"),
-                        "[0].dob", equalTo("2023-09-14"),
-                        "[0].sex", equalTo("M"),
-                        "[0].address", equalTo("5 NY St"),
-                        "[0].phone", equalTo("000-111-0000")
+                        "[0].patId", equalTo(1L),
+                        "[0].notes", equalTo("Notes 1")
                     );
-    }
-
-    /**
-     * Patient p4
-     */
-    @Test
-    public void testUpdate() {
-
-        Patient patientD = patientRepository.findByFamily("PatientFamily D").get(0);
-        System.out.println(patientD);
-
-        Long id = patientD.getId();
-
-        patientD.setFamily("PatientFamily E");
-        patientD.setGiven("PatientGiven E");
-        patientD.setDob("1950-08-10");
-        patientD.setSex("F");
-        patientD.setAddress("78 Oregon St");
-        patientD.setPhone("555-444-1212");
-
-        given()
-                .contentType(ContentType.JSON)
-                .body(patientD)
-                .when()
-                    .put("/patients/update")
-                .then()
-                    .statusCode(200)
-                    .contentType(ContentType.JSON);
-
-        // get the updated patient
-        Patient updatedPatient = patientRepository.findById(id).orElseThrow();
-        System.out.println(updatedPatient);
-
-        assertEquals(id, updatedPatient.getId());
-        assertEquals("PatientFamily E", updatedPatient.getFamily());
-        assertEquals("PatientGiven E", updatedPatient.getGiven());
-        assertEquals("1950-08-10", updatedPatient.getDob());
-        assertEquals("F", updatedPatient.getSex());
-        assertEquals("78 Oregon St", updatedPatient.getAddress());
-        assertEquals("555-444-1212", updatedPatient.getPhone());
         
     }
 
