@@ -9,5 +9,5 @@ import com.oc.projecttwo.model.PatientHistory;
 // Spring Data JPA creates CRUD implementation at runtime automatically.
 public interface PatientHistoryRepository extends MongoRepository<PatientHistory, Long> {
 
-	List<PatientHistory> findNoteByPatId(Long patId);
+	List<PatientHistory> findNotesByPatId(Long patId);
 }

@@ -34,8 +34,8 @@ public class PatientHistoryService {
         patientHistoryRepository.deleteById(patId);
     }
     
-    public List<PatientHistory> findNoteByPatId(Long patId) {
-        return patientHistoryRepository.findNoteByPatId(patId);
+    public List<PatientHistory> findNotesByPatId(Long patId) {
+        return patientHistoryRepository.findNotesByPatId(patId);
     }
 
 	public PatientHistory addPatientNote(PatientNote patientNote) {
