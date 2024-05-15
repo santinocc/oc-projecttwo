@@ -40,7 +40,7 @@ public class PatientHistoryControllerTest {
     @Container
     @ServiceConnection
     static MongoDBContainer mongodb = new MongoDBContainer(
-            "mongodb"
+            "mongo"
     );
 
     @BeforeEach
@@ -88,18 +88,23 @@ public class PatientHistoryControllerTest {
 
         given()
                 //Returning floats and doubles as BigDecimal
-                .config(RestAssured.config().jsonConfig(jsonConfig().numberReturnType(BIG_DECIMAL)))
+//                .config(RestAssured.config().jsonConfig(jsonConfig().numberReturnType(BIG_DECIMAL)))
                 .contentType(ContentType.JSON)
                 .pathParam("patId", patId)
                 .when()
-                    .get("{patId}")
+                    .get("/patHistory/{patId}")
                 .then()
                     .statusCode(200)
                     .contentType(ContentType.JSON)
                     .body(
-                        ".", hasSize(1),
-                        "[0].patId", equalTo("1L"),
-                        "[0].notes", equalTo("Note Test 1")
+                            // Check for existence of "patId" with Hamcrest matcher
+                            "$", hasKey("patId"),
+                            // Check for existence of "notes" with Hamcrest matcher
+                            "$", hasKey("notes"),
+                            // Check for "patId" with expected value
+                            "patId", equalTo(1),
+                            // Check for "notes" with expected value
+                            "notes[0]", equalTo("Note Test 1")
                 );
     }
 
@@ -119,7 +124,7 @@ public class PatientHistoryControllerTest {
 
         given()
                 .contentType(ContentType.JSON)
-                .body("{ \"patId\": \1L, \"notes\": \"Notes 1\" }")
+                .body("{ \"patId\": 1, \"note\": \"Notes 1\" }")
                 .when()
                     .post("/patHistory/add")
                 .then()
@@ -129,18 +134,23 @@ public class PatientHistoryControllerTest {
         // find the new saved patient
         given()
                 //Returning floats and doubles as BigDecimal
-                .config(RestAssured.config().jsonConfig(jsonConfig().numberReturnType(BIG_DECIMAL)))
                 .contentType(ContentType.JSON)
-                .pathParam("patId", "Notes 1")
+                .pathParam("patId", 1)
                 .when()
                     .get("/patHistory/{patId}")
                 .then()
                     .statusCode(200)
                     .contentType(ContentType.JSON)
                     .body(
-                        ".", hasSize(1),
-                        "[0].patId", equalTo(1L),
-                        "[0].notes", equalTo("Notes 1")
+                            // Check for existence of "patId" with Hamcrest matcher
+                            "$", hasKey("patId"),
+                            // Check for existence of "notes" with Hamcrest matcher
+                            "$", hasKey("notes"),
+                            // Check for "patId" with expected value
+                            "patId", equalTo(1),
+                            // Check for "notes" with expected value
+                            "notes[0]", equalTo("Note Test 1"),
+                            "notes[1]", equalTo("Notes 1")
                     );
         
     }
