@@ -32,7 +32,7 @@ public class PatientAssessmentService {
     	
     	String family = patientRepository.getReferenceById(id).getFamily();
     	String sex = patientRepository.getReferenceById(id).getSex();
-    	Integer terms = 0; // NEED TO DEVELOP SOLUTION FOR TERMS
+    	Integer terms = calculateTerms(id);
     	Integer age = calculateAge(id);
     	String diabetesAnswer = diabetesStatus(calculateAge(id), sex, terms, id);
     	
@@ -51,6 +51,7 @@ public class PatientAssessmentService {
     }
     
 	public Integer calculateAge(Long id) {
+		
 		String birthdate = patientRepository.getReferenceById(id).getDob();
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -61,21 +62,48 @@ public class PatientAssessmentService {
 	}
 
     public String diabetesStatus(Integer age, String sex, Integer terms, Long patId) {
+    	
     	List<PatientHistory> patientHistory = patientHistoryRepository.findNotesByPatId(patId);
-    	
-    	
     	
     	if (patientHistory == null) {
     		return ("None");
-    	} else if (age >= 30 && terms >= 2) {
-    		return ("Borderline");
-    	} else if ((age < 30 && sex.equals("M") && terms >= 3) || (age < 30 && sex.equals("F") && terms >= 4) || (age >= 30 && terms >= 6)) {
-    		return ("In Danger");
     	} else if ((age < 30 && sex.equals("M") && terms >= 5) || (age < 30 && sex.equals("F") && terms >= 7) || (age >= 30 && terms >= 8)) {
     		return ("Early Onset");
+    	} else if ((age < 30 && sex.equals("M") && terms >= 3) || (age < 30 && sex.equals("F") && terms >= 4) || (age >= 30 && terms >= 6)) {
+    		return ("In Danger");
+    	} else if (age >= 30 && terms >= 2) {
+    		return ("Borderline");
     	} else {
     		return ("None.");
     	}
+    }
+    
+ public Integer calculateTerms(Long patId) {
+    	
+    	List<String> notesHistory = patientHistoryRepository.findById(patId).get().getNotes();
+    	
+    	final String[] wordsToFind = {
+      	      "Hemoglobin A1C", "Microalbumin", "Body Height", "Body Weight",
+      	      "Smoker", "Abnormal", "Cholesterol", "Dizziness", "Relapse", "Reaction", "Antibodies"
+      	  };
+    	
+    	Integer terms = 0;
+
+    	
+    	for (String word : wordsToFind) {
+    		String lowerCaseWord = word.toLowerCase();
+    		
+    		for (String notes : notesHistory) {
+    			String lowerCaseNotes = notes.toLowerCase();
+    			
+    			if (lowerCaseNotes.contains(lowerCaseWord)) {
+    				terms++;
+    				break;
+    			}
+    		}
+    		
+    	}
+    	return terms;
     }
     
 //    THIS IS FOR CALCULATE TERMS WITH FULL GEMINI APPROACH
@@ -152,33 +180,5 @@ public class PatientAssessmentService {
 //
 //    	  // ... (rest of the code remains the same)
 //    	}
-    
- public Integer calculateTerms(Long patId) {
-    	
-    	List<String> notesHistory = patientHistoryRepository.findById(patId).get().getNotes();
-    	
-    	final String[] wordsToFind = {
-      	      "Hemoglobin A1C", "Microalbumin", "Body Height", "Body Weight",
-      	      "Smoker", "Abnormal", "Cholesterol", "Dizziness", "Relapse", "Reaction", "Antibodies"
-      	  };
-    	
-    	Integer terms = 0;
-
-    	for (String notes : notesHistory) {
-    		String lowerCaseNotes = notes.toLowerCase();
-    		
-    		for (String word : wordsToFind) {
-    			String lowerCaseWord = word.toLowerCase();
-    			
-    			if (lowerCaseNotes.contains(lowerCaseWord)) {
-    				terms++;
-    			}
-    		}
-    		
-    	}
-    	
-    	return terms;
-    	
-    }
 
 }
