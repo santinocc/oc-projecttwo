@@ -1,13 +1,9 @@
 package com.oc.projecttwo.controller;
 
-//import com.oc.projecttwo.model.PatientHistories;
 import com.oc.projecttwo.model.PatientHistory;
 import com.oc.projecttwo.model.PatientNote;
-//import com.oc.projecttwo.repository.PatientHistoryRepository;
 import com.oc.projecttwo.service.PatientHistoryService;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +15,6 @@ import java.util.Optional;
 @RequestMapping("/patHistory")
 public class PatientHistoryController {
 
-//    private final Logger logger = LoggerFactory.getLogger(PatientHistoryController.class);
-//    private final PatientHistoryRepository patientHistoryRepository;
-//
-//    public PatientHistoryController(final PatientHistoryRepository patientHistoryRepository) {
-//        this.patientHistoryRepository = patientHistoryRepository;
-//    }
 	
     @Autowired
     private PatientHistoryService patientHistoryService;

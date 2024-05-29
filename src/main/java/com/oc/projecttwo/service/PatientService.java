@@ -30,8 +30,7 @@ public class PatientService {
 	public boolean update(Patient patientUpdate) {
 		
 		Optional<Patient> patientToUpdate = patientRepository.findById(patientUpdate.getId());
-//		List<Patient> patients = patientRepository.findAll();
-//        boolean isUpdated = false;
+
         AtomicBoolean isUpdated = new AtomicBoolean(false);
 
         patientToUpdate.ifPresent(p-> {
@@ -42,7 +41,6 @@ public class PatientService {
             p.address = patientUpdate.address;
             p.phone = patientUpdate.phone;
             
-//            isUpdated = true;
             isUpdated.set(true);
         });
         
@@ -50,22 +48,6 @@ public class PatientService {
         	patientRepository.save(patientToUpdate.get()); 
         }
         
-//        if (patientToUpdate !=null) {
-//        for (Patient patient : patients) {
-//            if (patient.family.equals(patientUpdate.family) && patient.given.equals(patientUpdate.given)) {
-//                patient.setDob(patientUpdate.dob);
-//                patient.setSex(patientUpdate.sex);
-//                patient.setAddress(patientUpdate.address);
-//                patient.setPhone(patientUpdate.phone);
-            	
-//        patientToUpdate.dob = patientUpdate.dob;
-//        patientToUpdate.sex = patientUpdate.sex;
-//        patientToUpdate.address = patientUpdate.address;
-//        patientToUpdate.phone = patientUpdate.phone;
-
-//                break;
-//            }
-//        }
         return isUpdated.get();
 	}
 

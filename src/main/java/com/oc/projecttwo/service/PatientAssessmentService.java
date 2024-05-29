@@ -3,17 +3,13 @@ package com.oc.projecttwo.service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-//import java.util.ArrayList;
 import java.util.List;
-//import java.util.Optional;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.oc.projecttwo.model.Patient;
 import com.oc.projecttwo.model.PatientHistory;
-//import com.oc.projecttwo.model.PatientNote;
 import com.oc.projecttwo.repository.PatientHistoryRepository;
 import com.oc.projecttwo.repository.PatientRepository;
 
@@ -39,9 +35,10 @@ public class PatientAssessmentService {
         return "Patient: " + id + " " + family +" (age " + age + ") diabetes assessment is: " + diabetesAnswer + " due to sex: " + sex + " & " + terms + " terms.";
     }
 
-    public String assessDiabetesByFamily(String family) {
+    public String assessDiabetesByFamily(String family, String givenName) {
     	
-    	Long id = patientRepository.findByFamily(family).getId();
+    	Patient patient = patientRepository.findByFamilyAndGivenName(family, givenName);
+    	Long id = patient.getId();
     	String sex = patientRepository.getReferenceById(id).getSex();    	
     	Integer terms = calculateTerms(id);
     	Integer age = calculateAge(id);
@@ -105,80 +102,5 @@ public class PatientAssessmentService {
     	}
     	return terms;
     }
-    
-//    THIS IS FOR CALCULATE TERMS WITH FULL GEMINI APPROACH
-//    public Integer calculateTermss(Long patId) {
-//    	
-//    	List<String> notesHistory = patientHistoryRepository.findById(patId).get().getNotes();
-//    	
-//    	private static final String[] wordsToFind = {
-//      	      "Hemoglobin A1C", "Microalbumin", "Body Height", "Body Weight",
-//      	      "Smoker", "Abnormal", "Cholesterol", "Dizziness", "Relapse", "Reaction", "Antibodies"
-//      	  };
-//
-//    	
-//    	for (String notes : notesHistory ) {                 // This because notesHistory HAS notes and each notes HAS words
-//      	  Map<String, Integer> countWordsInNotes(String[] notes) {
-//      	    Map<String, Integer> wordCounts = new HashMap<>();
-//
-//      	    // Loop through each note
-//      	    for (String note : notes) {
-//      	      String lowerCaseNote = note.toLowerCase();  // Convert to lowercase for case-insensitive counting
-//      	      for (String wordToFind : wordsToFind) {
-//      	        int count = 0;
-//      	        int startIndex = 0;
-//      	        // Loop through the note to find occurrences of the word
-//      	        while ((startIndex = lowerCaseNote.indexOf(wordToFind, startIndex)) != -1) {
-//      	          count++;
-//      	          // Update starting index to avoid finding overlapping occurrences
-//      	          startIndex += wordToFind.length();   // THIS FOR WHAT REASON?
-//      	        }
-//      	        wordCounts.put(wordToFind, wordCounts.getOrDefault(wordToFind, 0) + count);
-//      	      }
-//      	    }
-//      	    
-//      	    System.out.println(wordCounts);
-//      	 
-//      	    return wordCounts;
-//
-//      	  }
-//    	}
-//    }
-    
-    
-//    GEMINI SUGGESTION AS IT IS
-//    public class WordCountInNotes {
-//
-//    	  // Predefined words to count (replace with your actual words)
-//    	  private static final String[] wordsToFind = {
-//    	      "Hemoglobin A1C", "Microalbumin", "Body Height", "Body Weight",
-//    	      "Smoker", "Abnormal", "Cholesterol", "Dizziness", "Relapse", "Reaction", "Antibodies"
-//    	  };
-//
-//    	  public static Map<String, Integer> countWordsInNotes(String[] notes) {
-//    	    Map<String, Integer> wordCounts = new HashMap<>();
-//
-//    	    // Loop through each note
-//    	    for (String note : notes) {
-//    	      String lowerCaseNote = note.toLowerCase();  // Convert to lowercase for case-insensitive counting
-//    	      for (String wordToFind : wordsToFind) {
-//    	        int count = 0;
-//    	        int startIndex = 0;
-//    	        // Loop through the note to find occurrences of the word
-//    	        while ((startIndex = lowerCaseNote.indexOf(wordToFind, startIndex)) != -1) {
-//    	          count++;
-//    	          // Update starting index to avoid finding overlapping occurrences
-//    	          startIndex += wordToFind.length();
-//    	        }
-//    	        wordCounts.put(wordToFind, wordCounts.getOrDefault(wordToFind, 0) + count);
-//    	      }
-//    	    }
-//    	    System.out.println(wordCounts);
-//    	 
-//    	    return wordCounts;
-//    	  }
-//
-//    	  // ... (rest of the code remains the same)
-//    	}
 
 }

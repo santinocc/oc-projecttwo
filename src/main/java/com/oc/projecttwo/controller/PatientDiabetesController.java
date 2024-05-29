@@ -20,9 +20,9 @@ public class PatientDiabetesController {
         return patientAssessmentService.assessDiabetesById(id);
     }
     
-    @GetMapping("/fam/{family}")
-    public String assessDiabetesByFamily(@PathVariable String family) {
-    	return patientAssessmentService.assessDiabetesByFamily(family);
+    @GetMapping("/{family}/{givenName}")
+    public String assessDiabetesByFamily(@PathVariable String family, @PathVariable String givenName) {
+    	return patientAssessmentService.assessDiabetesByFamily(family, givenName);
     }
 
 
